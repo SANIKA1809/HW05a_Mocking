@@ -1,0 +1,25 @@
+version: 2.1
+orbs:
+  python: circleci/python@2.0.1
+jobs:
+  build-and-test:
+    docker:
+      - image: circleci/python:3.9
+    steps:
+      - checkout
+      - run:
+          name: Install pytest
+          command: |
+            pip install pytest
+      - run:
+          name: Install requests
+          command: |
+            pip install requests
+      - run:
+          name: Run tests
+          command: |  
+            pytest --junitxml=test-results/junit.xml UNITTESTRC.py
+workflows:
+  RepoCommitUsers:
+    jobs:
+      - build-and-test
