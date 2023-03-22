@@ -1,5 +1,6 @@
 from unittest.mock import MagicMock
 import Repocommit
+import json
 
 def test_get_repo_commits():
     response_mock = MagicMock()
@@ -7,8 +8,15 @@ def test_get_repo_commits():
     Repocommit.requests.get = MagicMock(return_value=response_mock)
 
     username = "SANIKA1809"
-    repo_commits = Repocommit.get_repo_commits(username)
+    repo_commits = {}
 
+    try:
+        response = Repocommit.get_repo_commits(username)
+        for commit in response:
+            repo_commits[commit['commit']['url']] = len(commit['commit']['message'])
+    except (json.JSONDecodeError, TypeError) as e:
+        assert False, f"Failed to parse JSON response: {e}"
+    
     assert isinstance(repo_commits, dict)
     assert len(repo_commits) == 2
     assert all(isinstance(key, str) for key in repo_commits.keys())
